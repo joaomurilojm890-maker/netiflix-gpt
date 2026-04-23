@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Netflix Chat</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- HOME -->
+<div id="home" class="tela ativa">
+  <h1 class="logo">NETFLIX</h1>
+
+  <div class="center">
+    <h2>Filmes, séries e muito mais</h2>
+    <p>Sem limites. Assista onde quiser.</p>
+    <button onclick="abrirChat()">Conversar sobre filmes</button>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div id="chat" class="tela">
+  <h1 class="logo">NETFLIX</h1>
+
+  <div class="chat-box" id="chatBox">
+    <div class="bot">Oi! Posso te ajudar a escolher um filme 🎬</div>
+  </div>
+
+  <div class="input-area">
+    <input type="text" id="pergunta" placeholder="Pergunte sobre filmes...">
+    <button onclick="enviar()">Enviar</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

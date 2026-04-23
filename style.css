@@ -1,0 +1,72 @@
+body {
+  margin: 0;
+  font-family: Arial;
+  background: black;
+  color: white;
+}
+
+.logo {
+  color: red;
+  padding: 20px;
+}
+
+.tela {
+  display: none;
+  height: 100vh;
+}
+
+.ativa {
+  display: block;
+}
+
+.center {
+  text-align: center;
+  margin-top: 150px;
+}
+
+button {
+  padding: 12px;
+  background: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background: darkred;
+}
+
+.chat-box {
+  height: 70vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.bot {
+  background: #222;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 10px;
+}
+
+.user {
+  background: red;
+  padding: 10px;
+  margin: 10px;
+  border-radius: 10px;
+  text-align: right;
+}
+
+.input-area {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+}
+
+input {
+  flex: 1;
+  padding: 10px;
+  border: none;
+}
