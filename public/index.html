@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Netflix Chat</title>
+
+<style>
+body {
+  margin:0;
+  font-family:Arial;
+  background: linear-gradient(to bottom, black, #111);
+  color:white;
+}
+
+.logo {
+  color:red;
+  padding:20px;
+  font-size:32px;
+  font-weight:bold;
+}
+
+.tela { display:none; }
+.ativa { display:block; }
+
+.center {
+  text-align:center;
+  margin-top:150px;
+}
+
+button {
+  background:red;
+  color:white;
+  padding:12px 20px;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.chat-box {
+  height:65vh;
+  overflow:auto;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+}
+
+.bot {
+  background:#222;
+  margin:10px;
+  padding:12px;
+  border-radius:12px;
+  max-width:70%;
+}
+
+.user {
+  background:red;
+  margin:10px;
+  padding:12px;
+  border-radius:12px;
+  align-self:flex-end;
+  max-width:70%;
+}
+
+.input-area {
+  position:fixed;
+  bottom:0;
+  width:100%;
+  display:flex;
+  background:black;
+}
+
+input {
+  flex:1;
+  padding:12px;
+  border:none;
+}
+</style>
+
+</head>
+<body>
+
+<div id="home" class="ativa">
+  <h1 class="logo">NETFLIX</h1>
+
+  <div class="center">
+    <h2>Filmes, séries e muito mais</h2>
+    <button onclick="abrirChat()">Conversar</button>
+  </div>
+</div>
+
+<div id="chat" class="tela">
+  <h1 class="logo">NETFLIX</h1>
+
+  <div id="chatBox" class="chat-box">
+    <div class="bot">Oi! Quer recomendações? 😎</div>
+  </div>
+
+  <div class="input-area">
+    <input id="pergunta" placeholder="Digite aqui...">
+    <button onclick="enviar()">Enviar</button>
+  </div>
+</div>
+
+<script>
+function abrirChat() {
+  home.classList.remove("ativa");
+  chat.classList.add("ativa");
+}
+
+function enviar() {
+  let input = document.getElementById("pergunta");
+  let texto = input.value.toLowerCase();
+  let chat = document.getElementById("chatBox");
+
+  if (!texto) return;
+
+  chat.innerHTML += `<div class="user">${texto}</div>`;
+
+  let resposta = responder(texto);
+
+  chat.innerHTML += `<div class="bot">${resposta}</div>`;
+
+  input.value = "";
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function responder(t) {
+
+  if (t.includes("ação")) {
+    return "🔥 Recomendo: John Wick, Mad Max, Missão Impossível, Velozes e Furiosos";
+  }
+
+  if (t.includes("terror")) {
+    return "👻 Invocação do Mal, It, Annabelle, A Freira";
+  }
+
+  if (t.includes("romance")) {
+    return "❤️ Titanic, Diário de uma Paixão, A Culpa é das Estrelas";
+  }
+
+  if (t.includes("comédia")) {
+    return "😂 As Branquelas, Gente Grande, Se Beber Não Case";
+  }
+
+  if (t.includes("ficção") || t.includes("ficcao")) {
+    return "🚀 Interestelar, Matrix, Avatar, Star Wars";
+  }
+
+  if (t.includes("filmes")) {
+    return "Posso recomendar: ação, terror, comédia, romance ou ficção científica 🎬";
+  }
+
+  if (t.includes("oi") || t.includes("olá")) {
+    return "Oi 😄 Me fala um tipo de filme!";
+  }
+
+  return "Não entendi 🤔 tenta falar: ação, terror, romance, comédia ou ficção";
+}
+</script>
+
+</body>
+</html>
