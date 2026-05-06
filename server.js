@@ -9,96 +9,113 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(express.json());
-
-// 🔥 LIBERA ACESSO EXTERNO (celular / outros dispositivos)
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🔥 Servidor rodando em:`);
-  console.log(`👉 Local: http://localhost:${PORT}`);
-  console.log(`👉 Rede: http://SEU_IP:${PORT}`);
-});
-
-// 📁 frontend (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, "public")));
 
-// 🧠 memória simples
-let historico = [];
-let perfilUsuario = {
-  generoFavorito: null
-};
-
-function detectarGenero(msg) {
-  if (msg.includes("ação")) return "ação";
-  if (msg.includes("terror")) return "terror";
-  if (msg.includes("romance")) return "romance";
-  if (msg.includes("comédia")) return "comédia";
-  return null;
-}
-
-// 🤖 CHAT BOT DE FILMES INTELIGENTE
-app.post("/api/chat", (req, res) => {
-  const pergunta = req.body.pergunta;
-
-  console.log("Pergunta:", pergunta);
+// 🤖 CHAT PRINCIPAL
+app.post("/api/chat", async (req, res) => {
+  const { pergunta, modo } = req.body;
 
   if (!pergunta) {
-    return res.json({ resposta: "Me pergunta algo sobre filmes 😄" });
+    return res.json({ resposta: "Me pergunta algo 😄" });
   }
 
-  const msg = pergunta.toLowerCase();
+  // ⚔️ DEBATE ENTRE IAS
+  if (modo === "debate") {
+    try {
+      // 🧠 GEMINI
+      const geminiRes = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: `Você é um crítico de filmes. Opine sobre: ${pergunta}`
+              }]
+            }]
+          })
+        }
+      );
 
-  historico.push(pergunta);
-  if (historico.length > 8) historico.shift();
+      const geminiData = await geminiRes.json();
 
-  const genero = detectarGenero(msg);
+      const gemini =
+        geminiData?.candidates?.[0]?.content?.parts?.[0]?.text ||
+        "Gemini não respondeu";
 
-  if (genero) {
-    perfilUsuario.generoFavorito = genero;
-  }
+      // 🤖 GPT
+      const gptRes = await fetch(
+        process.env.PROF_API_BASE_URL + process.env.PROF_CHAT_PATH,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${process.env.PROF_BEARER_TOKEN}`
+          },
+          body: JSON.stringify({
+            model: "gpt-5.2-chat",
+            messages: [
+              {
+                role: "user",
+                content: `Gemini disse: "${gemini}". Agora discuta sobre: ${pergunta}`
+              }
+            ],
+            max_completion_tokens: 200
+          })
+        }
+      );
 
-  let resposta = "";
+      const gptData = await gptRes.json();
 
-  if (msg.includes("oi") || msg.includes("olá") || msg.includes("fala")) {
-    resposta = "Oi 😄 Quer recomendações de filmes ou já tem um gênero?";
-  }
+      const gpt =
+        gptData?.output?.[0]?.content?.[0]?.text ||
+        "GPT não respondeu";
 
-  else if (msg.includes("recomenda") || msg.includes("filme")) {
-    if (perfilUsuario.generoFavorito === "ação") {
-      resposta = "🔥 Ação: John Wick, Vingadores, Mad Max";
+      return res.json({
+        resposta: `
+🧠 GEMINI:
+${gemini}
+
+🤖 GPT:
+${gpt}
+        `
+      });
+
+    } catch (err) {
+      return res.json({ resposta: "Erro no debate 😢" });
     }
-    else if (perfilUsuario.generoFavorito === "terror") {
-      resposta = "👻 Terror: Hereditário, It, Invocação do Mal";
-    }
-    else if (perfilUsuario.generoFavorito === "romance") {
-      resposta = "❤️ Romance: Titanic, Diário de uma Paixão";
-    }
-    else if (perfilUsuario.generoFavorito === "comédia") {
-      resposta = "😂 Comédia: Superbad, Se Beber Não Case";
-    }
-    else {
-      resposta = "Me fala um gênero (ação, terror, romance, comédia) 🎬";
-    }
   }
 
-  else if (genero === "ação") {
-    resposta = "🔥 Ação: John Wick, Mad Max, Vingadores";
-  }
-  else if (genero === "terror") {
-    resposta = "👻 Terror: Hereditário, It, Invocação do Mal";
-  }
-  else if (genero === "romance") {
-    resposta = "❤️ Romance: Titanic, Diário de uma Paixão";
-  }
-  else if (genero === "comédia") {
-    resposta = "😂 Comédia: Superbad, Se Beber Não Case";
+  // 🧠 GEMINI NORMAL
+  if (modo === "gemini") {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{ text: pergunta }]
+          }]
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    return res.json({
+      resposta: data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sem resposta"
+    });
   }
 
-  else {
-    resposta = `Entendi 😄 você disse: "${pergunta}". Quer recomendações de filmes?`;
-  }
-
-  res.json({
-    resposta,
-    historico,
-    perfilUsuario
+  // 🤖 GPT NORMAL (fallback)
+  return res.json({
+    resposta: "Modo GPT ativo (configure aqui sua lógica)"
   });
+});
+
+// 🚀 SERVER
+app.listen(PORT, () => {
+  console.log(`🔥 http://localhost:${PORT}`);
 });
