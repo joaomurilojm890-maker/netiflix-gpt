@@ -1,6 +1,13 @@
+let modo = "gemini";
+
 const input = document.getElementById("chatInput");
 const btn = document.getElementById("sendBtn");
 const chat = document.getElementById("chatMessages");
+
+function setModo(m) {
+  modo = m;
+  alert("Modo: " + m);
+}
 
 function addMsg(text, type) {
   const div = document.createElement("div");
@@ -11,7 +18,7 @@ function addMsg(text, type) {
 }
 
 async function send() {
-  const text = input.value.trim();
+  const text = input.value;
   if (!text) return;
 
   addMsg(text, "user");
@@ -22,12 +29,15 @@ async function send() {
   const res = await fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ pergunta: text })
+    body: JSON.stringify({
+      pergunta: text,
+      modo: modo
+    })
   });
 
   const data = await res.json();
 
-  document.querySelectorAll(".msg.bot").forEach(m => {
+  document.querySelectorAll(".bot").forEach(m => {
     if (m.innerText === "Pensando...") m.remove();
   });
 
