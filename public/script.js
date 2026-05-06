@@ -1,60 +1,41 @@
-const moviesGrid = document.getElementById("moviesGrid");
-const drawer = document.getElementById("drawer");
-const closeDrawer = document.getElementById("closeDrawer");
-const selectedMovieInfo = document.getElementById("selectedMovieInfo");
-const reviewsList = document.getElementById("reviewsList");
-const chatMessages = document.getElementById("chatMessages");
-const chatInput = document.getElementById("chatInput");
-const sendChatBtn = document.getElementById("sendChatBtn");
-const searchForm = document.getElementById("searchForm");
-const searchInput = document.getElementById("searchInput");
+const input = document.getElementById("chatInput");
+const btn = document.getElementById("sendBtn");
+const chat = document.getElementById("chatMessages");
 
-const state = {
-  movies: [],
-  selectedMovie: null,
-  selectedReviews: []
-};
-
-function escapeHtml(text = "") {
-  return String(text)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+function addMsg(text, type) {
+  const div = document.createElement("div");
+  div.classList.add("msg", type);
+  div.innerText = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
 }
 
-async function fetchJSON(url, options = {}) {
-  const response = await fetch(url, options);
-  const data = await response.json().catch(() => ({}));
+async function send() {
+  const text = input.value.trim();
+  if (!text) return;
 
-  if (!response.ok) {
-    throw new Error(data.error || data.resposta || "Erro na requisição.");
-  }
+  addMsg(text, "user");
+  input.value = "";
 
-  return data;
+  addMsg("Pensando...", "bot");
+
+  const res = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ pergunta: text })
+  });
+
+  const data = await res.json();
+
+  document.querySelectorAll(".msg.bot").forEach(m => {
+    if (m.innerText === "Pensando...") m.remove();
+  });
+
+  addMsg(data.resposta, "bot");
 }
 
-function getMovieCard(movie) {
-  return `
-    <article class="card">
-      <div class="poster-fallback">${escapeHtml(movie.title)}</div>
-      <div class="card-body">
-        <h3>${escapeHtml(movie.title)}</h3>
-        <button data-id="${movie.id}">Abrir</button>
-      </div>
-    </article>
-  `;
-}
+btn.onclick = send;
 
-function renderMovies() {
-  moviesGrid.innerHTML = state.movies.map(getMovieCard).join("");
-}
-
-searchForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const res = await fetchJSON(`/api/movies?search=${searchInput.value}`);
-  state.movies = res;
-  renderMovies();
+input.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") send();
 });
