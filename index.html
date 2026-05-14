@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>🎬 CineAI</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+</head>
+
+<body>
+
+  <!-- ==========================
+  BANNER
+  =========================== -->
+
+  <div class="banner">
+
+    <div class="overlay"></div>
+
+    <header>
+
+      <h1>🎬 CineAI</h1>
+
+      <nav>
+
+        <span>Filmes</span>
+        <span>Séries</span>
+        <span>Animes</span>
+
+      </nav>
+
+    </header>
+
+    <div class="hero">
+
+      <h2>
+        Converse sobre filmes e séries
+      </h2>
+
+      <p>
+        IA com voz, microfone
+        e visual Netflix.
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- ==========================
+  FILMES
+  =========================== -->
+
+  <section class="filmes">
+
+    <h2>🔥 Em Alta</h2>
+
+    <div class="cards">
+
+      <img src="https://image.tmdb.org/t/p/w500/q719jXXEzOoYaps6babgKnONONX.jpg">
+
+      <img src="https://image.tmdb.org/t/p/w500/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg">
+
+      <img src="https://image.tmdb.org/t/p/w500/9Gtg2DzBhmYamXBS1hKAhiwbBKS.jpg">
+
+      <img src="https://image.tmdb.org/t/p/w500/6ELCZlTA5lGUops70hKdB83WJxH.jpg">
+
+      <img src="https://image.tmdb.org/t/p/w500/r7vmZjiyZw9rpJMQJdXpjgiCOk9.jpg">
+
+    </div>
+
+  </section>
+
+  <!-- ==========================
+  CHAT
+  =========================== -->
+
+  <div class="container">
+
+    <!-- BOTÕES -->
+
+    <div class="buttons">
+
+      <button
+        onclick="setMode('gpt')"
+      >
+        🤖 ChatGPT
+      </button>
+
+      <button
+        onclick="setMode('gemini')"
+      >
+        🧠 Gemini
+      </button>
+
+    </div>
+
+    <!-- CHAT -->
+
+    <div id="chat"></div>
+
+    <!-- INPUT -->
+
+    <div class="inputArea">
+
+      <input
+        id="input"
+        type="text"
+        placeholder="Pergunte sobre filmes..."
+      >
+
+      <!-- MICROFONE -->
+
+      <button onclick="voice()">
+        🎤
+      </button>
+
+      <!-- ENVIAR -->
+
+      <button onclick="send()">
+        Enviar
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- ==========================
+  AVATAR JUBILEU
+  =========================== -->
+
+  <div class="jubileuAvatar">
+
+    <img
+      src="assets/jubileu.png"
+      id="jubileuImg"
+    >
+
+  </div>
+
+  <!-- SCRIPT -->
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>
